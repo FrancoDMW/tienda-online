@@ -3,7 +3,7 @@ const exphbs = require('express-handlebars');
 const mysql = require('mysql');
 const path = require('path');
 const bodyParser = require('body-parser');
-import 'dotenv/config';
+const dotenv = require('dotenv');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
