@@ -107,13 +107,47 @@ app.get('/agregar-producto', (req, res) => {
 app.post('/agregar-producto', (req, res) => {
     const { nombre, cantidad, precio, url_imagen } = req.body;
 
-    const query = 'INSERT INTO productos (nombre, cantidad, precio, url_imagen) VALUES (?, ?, ?, ?)';
-    db.query(query, [nombre, cantidad, precio, url_imagen], (err, result) => {
+    // Consultas para seleccionar ids aleatorios de las tablas categorias, promos y cuotas
+    const getCategoriaId = 'SELECT id_categoria FROM categorias ORDER BY RAND() LIMIT 1';
+    const getPromosId = 'SELECT id_promos FROM promos ORDER BY RAND() LIMIT 1';
+    const getCuotasId = 'SELECT id_cuotas FROM cuotas ORDER BY RAND() LIMIT 1';
+
+    // Ejecutar consultas y agregar producto
+    db.query(getCategoriaId, (err, categoriaResult) => {
         if (err) {
-            console.error('Error al agregar producto:', err);
-            return res.status(500).send('Error al agregar producto');
+            console.error('Error al obtener id_categoria:', err);
+            return res.status(500).send('Error al obtener id_categoria');
         }
-        res.redirect('/'); // Redirecciona al inicio o a la página donde se lista los productos
+        const id_categoria = categoriaResult[0].id_categoria;
+
+        db.query(getPromosId, (err, promosResult) => {
+            if (err) {
+                console.error('Error al obtener id_promos:', err);
+                return res.status(500).send('Error al obtener id_promos');
+            }
+            const id_promos = promosResult[0].id_promos;
+
+            db.query(getCuotasId, (err, cuotasResult) => {
+                if (err) {
+                    console.error('Error al obtener id_cuotas:', err);
+                    return res.status(500).send('Error al obtener id_cuotas');
+                }
+                const id_cuotas = cuotasResult[0].id_cuotas;
+
+                // Consulta para insertar nuevo producto
+                const query = `
+                    INSERT INTO productos (nombre, cantidad, precio, url_imagen, id_categoria, id_promos, id_cuotas)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                `;
+                db.query(query, [nombre, cantidad, precio, url_imagen, id_categoria, id_promos, id_cuotas], (err, result) => {
+                    if (err) {
+                        console.error('Error al agregar producto:', err);
+                        return res.status(500).send('Error al agregar producto');
+                    }
+                    res.redirect('/'); // Redirecciona al inicio o a la página donde se listan los productos
+                });
+            });
+        });
     });
 });
 
@@ -137,3 +171,4 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
+
