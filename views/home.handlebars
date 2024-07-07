@@ -1,0 +1,45 @@
+<header>
+    <h1>Tienda Online</h1>
+    <div class="divProducto">
+        <a href="/agregar-producto" class="btn">Agregar o eliminar Producto</a>
+        <!-- Enlace al formulario de agregar producto -->
+    </div>
+</header>
+<main>
+    <div class="product-grid">
+        {{#each productos}}
+        <div class="product-card">
+            <img src="/images/{{this.url_imagen}}" alt="{{this.nombre}}">
+            <h2>{{this.nombre}}</h2>
+            <p>Precio: ${{this.precio}}</p>
+            <p>Stock: <span id="stock-{{this.id}}">{{this.cantidad}}</span></p>
+            <button onclick="actualizarStock({{this.id}}, 'incrementar')">+</button>
+            <button onclick="actualizarStock({{this.id}}, 'decrementar')">-</button>
+        </div>
+        {{/each}}
+    </div>
+</main>
+<footer>
+    <p>&copy; 2024 Tienda Online. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    async function actualizarStock(id, accion) {
+        try {
+            const response = await fetch(`/productos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ accion })
+            });
+            if (!response.ok) {
+                throw new Error('Error al actualizar el stock');
+            }
+            const productoActualizado = await response.json();
+            document.getElementById(`stock-${id}`).textContent = productoActualizado.cantidad;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</script>
