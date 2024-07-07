@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars');
 const mysql = require('mysql');
 const path = require('path');
 const bodyParser = require('body-parser');
+import 'dotenv/config';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,10 +15,10 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Configuración de la conexión a la base de datos
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'productos_prueba'
+    host: process.env.MYSQL_ADDON_HOST,
+    user: process.env.MYSQL_ADDON_USER,
+    password: process.env.MYSQL_ADDON_PASSWORD,
+    database: process.env.MYSQL_ADDON_DB
 });
 
 // Configuración de Body Parser
