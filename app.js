@@ -156,8 +156,8 @@ app.post('/agregar-producto', (req, res) => {
 app.post('/eliminar-producto', (req, res) => {
     const { nombreEliminar, idEliminar } = req.body;
 
-    const query = 'DELETE FROM productos WHERE nombre = ? AND id = ?';
-    db.query(query, [nombreEliminar, idEliminar], (err, result) => {
+    const query = 'DELETE FROM productos WHERE nombre = ?';
+    db.query(query, [nombreEliminar], (err, result) => {
         if (err) {
             console.error('Error al eliminar producto:', err);
             return res.status(500).send('Error al eliminar producto');
